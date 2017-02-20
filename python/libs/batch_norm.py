@@ -40,7 +40,7 @@ def batch_norm(x, phase_train, scope='bn', affine=True):
 
         batch_mean, batch_var = tf.nn.moments(x, [0, 1, 2], name='moments')
         ema = tf.train.ExponentialMovingAverage(decay=0.9)
-        ema_mean, ema_var = ema.average(batch_mean), ema.average(batch_var)
+        # ema_mean, ema_var = ema.average(batch_mean), ema.average(batch_var)
 
         def mean_var_with_update():
             """Summary
@@ -55,8 +55,12 @@ def batch_norm(x, phase_train, scope='bn', affine=True):
                 return tf.identity(batch_mean), tf.identity(batch_var)
         mean, var = tf.cond(phase_train,
                                           mean_var_with_update,
-                                          lambda: (ema_mean, ema_var))
+                                          # cond requires the returned variable to have some properties
+                                          lambda: (ema.average(batch_mean), ema.average(batch_var)))
 
-        normed = tf.nn.batch_norm_with_global_normalization(
-            x, mean, var, beta, gamma, 1e-3, affine)
+        # deprecated
+        # normed = tf.nn.batch_norm_with_global_normalization(
+        #     x, mean, var, beta, gamma, 1e-3, affine)
+        normed = tf.nn.batch_normalization(
+            x, mean, var, beta, gamma, 1e-3)
     return normed

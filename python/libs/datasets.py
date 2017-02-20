@@ -15,7 +15,7 @@ def MNIST(one_hot=True):
         DataSet object w/ convenienve props for accessing
         train/validation/test sets and batches.
     """
-    return input_data.read_data_sets('MNIST_data/', one_hot=one_hot)
+    return input_data.read_data_sets('../../mnist/', one_hot=one_hot)
 
 
 def CIFAR10():
